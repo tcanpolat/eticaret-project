@@ -29,6 +29,41 @@ var userManager = builder.Services.BuildServiceProvider().GetService<UserManager
 var roleManager = builder.Services.BuildServiceProvider().GetService<RoleManager<IdentityRole>>();
 
 
+// Identity ayarlarý
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 6;
+
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.AllowedForNewUsers = true;
+
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = true;
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+});
+
+// Authentication Cookie ayarlarý
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/account/login";
+    options.LogoutPath = "/account/logout";
+    options.AccessDeniedPath = "/account/accessDenied";
+    options.SlidingExpiration = true; // sliding expiration => her istek yapýldýðýnda sürenin uzatýlmasý
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    options.Cookie = new CookieBuilder
+    {
+        HttpOnly = true,
+        Name = ".ETICARET.Security.Cookie",
+        SameSite = SameSiteMode.Strict
+    };
+});
+
+
 // Bussiness ve Data katmanlarý için servis ekleme
 builder.Services.AddScoped<IProductDal, EfCoreProductDal>();
 builder.Services.AddScoped<IProductService, ProductManager>();

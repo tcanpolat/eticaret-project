@@ -18,6 +18,7 @@
                 {
                     @foreach (Product product in Model.Products)
                     {
+                        // partial view çağrısı
                         <partial name="_products" for="@product" />
                     }
                 }
