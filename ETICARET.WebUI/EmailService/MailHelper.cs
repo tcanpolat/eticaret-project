@@ -8,17 +8,17 @@ namespace ETICARET.WebUI.EmailService
     {
         public static bool SendEmail(string body,string to,string subject, bool isHtml = true)
         {
-            return SendEmail(body,to,subject,isHtml);
+            return SendEmail(body,new List<string> { to },subject,isHtml);
         }
 
-        public static bool SendEmail(string body, List<string> to, string subject, bool isHtml = true)
+        public static bool SendEmail(string body, List<string> to, string subject, bool isHtml)
         {
             bool result = false;
 
             try
             {
                 var message = new MailMessage();
-                message.From = new MailAddress("ucuncubinyilakademiemailservice@gmail.com");
+                message.From = new MailAddress("ucuncubinyilakademimailservice@gmail.com");
 
                 to.ForEach(x =>
                 {
@@ -32,10 +32,12 @@ namespace ETICARET.WebUI.EmailService
                 using (var smtp = new SmtpClient("smtp.gmail.com", 587))
                 {
                     smtp.EnableSsl = true;
-                    smtp.Credentials = new NetworkCredential("ucuncubinyilakademiemailservice@gmail.com", "wdpy prpp pekv nfll");
+                    smtp.Credentials = new NetworkCredential("ucuncubinyilakademimailservice@gmail.com", "hjyd iocd gfra zzeh");
+                    smtp.UseDefaultCredentials = false;
                     smtp.Send(message);
                     result = true;
                 }
+
             }
             catch (Exception e)
             {
