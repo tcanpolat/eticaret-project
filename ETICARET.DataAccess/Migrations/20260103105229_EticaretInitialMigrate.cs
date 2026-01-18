@@ -192,6 +192,8 @@ namespace ETICARET.DataAccess.Migrations
                         principalTable: "Categories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    // onDelete özellikleri Cascade, yani bir ürün silindiğinde ilgili ProductCategory kayıtları da silinecek
+                    // Restrict, SetNull gibi farklı seçenekler de kullanılabilir
                     table.ForeignKey(
                         name: "FK_ProductCategory_Products_ProductId",
                         column: x => x.ProductId,
