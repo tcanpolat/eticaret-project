@@ -33,7 +33,7 @@ namespace ETICARET.DataAccess.Concrete.EfCore
                     return products
                         .Include(i => i.ProductCategories)
                         .ThenInclude(i => i.Category)
-                        .ThenInclude(i => i.ProductCategories.Any())
+                        .Where(i => i.ProductCategories.Any())
                         .Count();
                 }
 
@@ -69,7 +69,7 @@ namespace ETICARET.DataAccess.Concrete.EfCore
 
                 }
 
-                return products.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+                return products.Include(product => product.Images).Skip((page - 1) * pageSize).Take(pageSize).ToList();
                 
 
             }
