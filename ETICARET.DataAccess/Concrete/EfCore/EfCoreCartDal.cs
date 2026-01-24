@@ -36,6 +36,7 @@ namespace ETICARET.DataAccess.Concrete.EfCore
                 return context.Carts
                     .Include(i => i.CartItems) // Include ile CartItems tablosunu da ekliyoruz
                     .ThenInclude(i => i.Product) // ThenInclude ile CartItems içindeki Product tablosunu da ekliyoruz
+                    .ThenInclude(i => i.Images) // ThenInclude ile Product içindeki Images tablosunu da ekliyoruz
                     .FirstOrDefault(i => i.UserId == userId);
             }
         }

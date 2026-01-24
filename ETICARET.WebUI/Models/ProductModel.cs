@@ -7,7 +7,7 @@ namespace ETICARET.WebUI.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public decimal? Price { get; set; }
+        public decimal Price { get; set; }
         public List<Image> Images { get; set; }
         public List<Category> SelectedCategories { get; set; }
         public string CategoryId { get; set; }

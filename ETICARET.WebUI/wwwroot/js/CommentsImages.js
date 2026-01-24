@@ -49,16 +49,64 @@ function doComment(btn,e,commentId,spanId)
             method: "POST",
             url: "/Comment/Delete?id=" + commentId,
         })
-        .done(function (data) {
-            if (data.result) {
-                $(CommentBodyId).load("/Comment/ShowProductComments?id=" + productId)
-            }
-            else {
-                alert("Yorum silinirken bir hata oluştu!");
-            }
-        })
-        .fail(function (error) {
-            alert("Sunucuda bir hata oluştu!")
-        })
+            .done(function (data) {
+                if (data.result) {
+                    $(CommentBodyId).load("/Comment/ShowProductComments?id=" + productId)
+                }
+                else {
+                    alert("Yorum silinirken bir hata oluştu!");
+                }
+            })
+            .fail(function (error) {
+                alert("Sunucuda bir hata oluştu!")
+            })
+    }
+    else if (e == "edit_clicked") {
+        if (!mode) {
+            button.data("edit-mode", true)
+            button.removeClass("btn-warning")
+            button.addClass("btn-success")
+            var btnSpan = button.find("span")
+            btnSpan.removeClass("fa-edit")
+            btnSpan.addClass("fa-check")
+            editableContent.addClass("editable-content")
+            editableContent.addClass("editableComment")
+            $(spanId).attr("contenteditable", true)
+        }
+        else {
+            button.data("edit-mode", false)
+            button.removeClass("btn-success")
+            button.addClass("btn-warning")
+            var btnSpan = button.find("span")
+            btnSpan.removeClass("fa-check")
+            btnSpan.addClass("fa-edit")
+            editableContent.removeClass("editable-content")
+            editableContent.removeClass("editableComment")
+            $(spanId).attr("contenteditable", true)
+
+            var txt = $(spanId).text().trim(' ')
+
+            $.ajax({
+                method: "POST",
+                url: "/Comment/Edit",
+                data: { 'text': txt, 'id': commentId }
+
+            })
+            .done(function (data) {
+
+                if (data.result) {
+                    $(CommentBodyId).load("/Comment/ShowProductComments?id=" + productId)
+                }
+                else {
+                    alert("Yorum güncellenirken bir hata oluştu!");
+                }
+
+            })
+            .fail(function (error) {
+                alert("Sunucuda bir hata oluştu!");
+            })
+        }
+
+
     }
 }

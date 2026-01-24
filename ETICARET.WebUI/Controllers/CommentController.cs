@@ -100,6 +100,29 @@ namespace ETICARET.WebUI.Controllers
             return Json(new { result = true } );
 
         }
+
+        public IActionResult Edit(int? id,string text) 
+        {
+        
+            if(id is null)
+            {
+                return BadRequest();
+            }
+
+            Comment comment = _commentService.GetById(id.Value);
+
+            if (comment == null) {
+                return NotFound();
+            }
+
+            comment.Text = text;
+            comment.CreateOn = DateTime.Now;
+
+            _commentService.Update(comment);
+
+            return Json(new { result = true });
+
+        }
     }
 
 
