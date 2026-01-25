@@ -15,7 +15,7 @@ namespace ETICARET.DataAccess.Concrete.EfCore
         {
             using (var context = new DataContext())
             {
-                var cmd = @"DELETE FROM Carts WHERE CartId = @p0";
+                var cmd = @"DELETE FROM CartItem WHERE CartId = @p0";
                 context.Database.ExecuteSqlRaw(cmd, cartId);
             }
         }

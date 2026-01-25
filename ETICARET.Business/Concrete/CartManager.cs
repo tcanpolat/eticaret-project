@@ -41,9 +41,9 @@ namespace ETICARET.Business.Concrete
             _cartDal.Update(cart); // Dataaccess katmanında güncelleme işlemi
         }
 
-        public void ClearCart(string userId)
+        public void ClearCart(string cartId)
         {
-            _cartDal.ClearCart(userId);
+            _cartDal.ClearCart(cartId);
         }
 
         public void DeleteFromCart(string userId, int productId)

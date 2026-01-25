@@ -13,6 +13,6 @@ namespace ETICARET.Business.Abstract
         Cart GetCartByUserId(string userId);
         void AddToCart(string userId, int productId, int quantity);
         void DeleteFromCart(string userId, int productId);
-        void ClearCart(string userId);
+        void ClearCart(string cartId);
     }
 }
