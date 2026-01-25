@@ -1,5 +1,6 @@
 ﻿using ETICARET.Business.Abstract;
 using ETICARET.Entities;
+using ETICARET.WebUI.EmailService;
 using ETICARET.WebUI.Extensions;
 using ETICARET.WebUI.Identity;
 using ETICARET.WebUI.Models;
@@ -117,6 +118,43 @@ namespace ETICARET.WebUI.Controllers
                     {
                         SaveOrder(model, payment, userId);
                         ClearCart(cart.Id.ToString());
+                        string mailBody =
+                        "<div style='width:100%; background-color:#f4f6f8; padding:30px 0; font-family:Arial, Helvetica, sans-serif;'>" +
+                        "  <div style='max-width:600px; margin:0 auto; background-color:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.05);'>" +
+
+                        "    <div style='background-color:#4f46e5; padding:20px; text-align:center;'>" +
+                        "      <h1 style='margin:0; font-size:22px; color:#ffffff;'>Sipariş Onayı</h1>" +
+                        "    </div>" +
+
+                        "    <div style='padding:30px; color:#333333; font-size:14px; line-height:1.6;'>" +
+                        "      <p style='margin-top:0;'>Sayın <strong>" + model.FirstName + " " + model.LastName + "</strong>,</p>" +
+
+                        "      <p>Siparişiniz başarıyla alınmıştır. Sipariş detaylarınız aşağıda yer almaktadır:</p>" +
+
+                        "      <div style='background-color:#f9fafb; border:1px solid #e5e7eb; border-radius:6px; padding:15px; margin:20px 0;'>" +
+                        "        <p style='margin:0 0 8px 0;'>" +
+                        "          <strong>Sipariş Numaranız:</strong><br/>" +
+                        "          <span style='color:#4f46e5;'>" + payment.Result.ConversationId + "</span>" +
+                        "        </p>" +
+                        "        <p style='margin:0;'>" +
+                        "          <strong>Toplam Tutar:</strong><br/>" +
+                        "          <span style='font-size:16px; font-weight:bold;'>" + payment.Result.PaidPrice + " TL</span>" +
+                        "        </p>" +
+                        "      </div>" +
+
+                        "      <p>Bizi tercih ettiğiniz için teşekkür ederiz.</p>" +
+
+                        "      <p style='margin-bottom:0;'>Saygılarımızla,<br/><strong>Üçüncübinyıl Akademi</strong></p>" +
+                        "    </div>" +
+
+                        "    <div style='background-color:#f3f4f6; padding:15px; text-align:center; font-size:12px; color:#6b7280;'>" +
+                        "      Bu e-posta bilgilendirme amaçlıdır." +
+                        "    </div>" +
+
+                        "  </div>" +
+                        "</div>";
+
+                        MailHelper.SendEmail(mailBody, model.Email, "Sipariş Onayı",true);
                         TempData.Put("message", new ResultModel()
                         {
                             Title="Sipariş Tamamlandı",
@@ -138,8 +176,35 @@ namespace ETICARET.WebUI.Controllers
                 else
                 {
                     // Eft için Sipariş oluşturma
+
                     SaveOrder(model, userId);
                     ClearCart(cart.Id.ToString());
+                    string mailBody =
+                    "<div style='width:100%; background-color:#f4f6f8; padding:30px 0; font-family:Arial, Helvetica, sans-serif;'>" +
+                    "  <div style='max-width:600px; margin:0 auto; background-color:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.05);'>" +
+
+                    "    <div style='background-color:#4f46e5; padding:20px; text-align:center;'>" +
+                    "      <h1 style='margin:0; font-size:22px; color:#ffffff;'>Sipariş Onayı</h1>" +
+                    "    </div>" +
+
+                    "    <div style='padding:30px; color:#333333; font-size:14px; line-height:1.6;'>" +
+                    "      <p style='margin-top:0;'>Sayın <strong>" + model.FirstName + " " + model.LastName + "</strong>,</p>" +
+
+                    "      <p>Siparişiniz başarıyla alınmıştır. Sipariş detaylarınız aşağıda yer almaktadır:</p>" +
+
+                    "      <p>Bizi tercih ettiğiniz için teşekkür ederiz.</p>" +
+
+                    "      <p style='margin-bottom:0;'>Saygılarımızla,<br/><strong>Üçüncübinyıl Akademi</strong></p>" +
+                    "    </div>" +
+
+                    "    <div style='background-color:#f3f4f6; padding:15px; text-align:center; font-size:12px; color:#6b7280;'>" +
+                    "      Bu e-posta bilgilendirme amaçlıdır." +
+                    "    </div>" +
+
+                    "  </div>" +
+                    "</div>";
+
+                    MailHelper.SendEmail(mailBody, model.Email, "Sipariş Onayı", true);
 
                     TempData.Put("message", new ResultModel()
                     {
