@@ -10,13 +10,15 @@ namespace ETICARET.WebUI.Controllers
     public class HomeController : Controller
     {
         private readonly IProductService _productService;
-
-        public HomeController(IProductService productService)
+        private readonly ICartService _cartService;
+        public HomeController(IProductService productService,ICartService cartService)
         {
             _productService = productService;
+            _cartService = cartService;
         }
         public IActionResult Index()
         {
+            
             var products = _productService.GetAll();
 
             if(products == null || !products.Any())
