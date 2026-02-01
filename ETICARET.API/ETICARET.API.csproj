@@ -19,7 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\ETICARET.Business\ETICARET.Business.csproj" />
+    <ProjectReference Include="..\ETICARET.DataAccess\ETICARET.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

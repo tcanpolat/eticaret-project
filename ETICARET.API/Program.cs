@@ -1,8 +1,13 @@
 using ETICARET.API.Identity;
+using ETICARET.Business.Abstract;
+using ETICARET.Business.Concrete;
+using ETICARET.DataAccess.Abstract;
+using ETICARET.DataAccess.Concrete.EfCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -80,11 +85,96 @@ builder.Services.AddAuthentication(options =>
         // Token süresi doldu tolerans olsun mu
         ClockSkew = TimeSpan.Zero
     };
+
+    // Debug için
+    options.Events = new JwtBearerEvents
+    {
+        // OnAuthenticationFailed olayý, kimlik doðrulama baþarýsýz olduðunda tetiklenir
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine("OnAuthenticationFailed: " + context.Exception.Message);
+            return Task.CompletedTask;
+        },
+        // OnTokenValidated olayý, token doðrulandýktan sonra tetiklenir
+        OnTokenValidated = context =>
+        {
+            Console.WriteLine("OnTokenValidated: " + context.SecurityToken);
+            return Task.CompletedTask;
+        },
+        // OnChallenge olayý, kimlik doðrulama baþarýsýz olduðunda tetiklenir
+        OnChallenge = context =>
+        {
+            Console.WriteLine("OnChallenge: " + context.Error);
+            return Task.CompletedTask;
+        }
+    };
 });
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Bussiness ve Data katmanlarý için servis ekleme
+builder.Services.AddScoped<IProductDal, EfCoreProductDal>();
+builder.Services.AddScoped<IProductService, ProductManager>();
+builder.Services.AddScoped<ICategoryDal, EfCoreCategoryDal>();
+builder.Services.AddScoped<ICategoryService, CategoryManager>();
+builder.Services.AddScoped<ICartDal, EfCoreCartDal>();
+builder.Services.AddScoped<ICartService, CartManager>();
+builder.Services.AddScoped<ICommentDal, EfCoreCommentDal>();
+builder.Services.AddScoped<ICommentService, CommentManager>();
+builder.Services.AddScoped<IOrderDal, EfCoreOrderDal>();
+builder.Services.AddScoped<IOrderService, OrderManager>();
+
+// Swagger Yapýlandýrmasý (Api dökümantasyonu ve Test arayüzü)
+// Test ortamýnda swagger ayarlarý
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "ETICARET.API",
+        Version = "v1",
+        Description = "ETICARET API Dökümantasyonu"
+    });
+
+    // Swagger JWT Authentication Ayarlarý
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization : Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header, // Parameter'in header'da olduðunu belirtir
+        Type = SecuritySchemeType.ApiKey, // ApiKey türünde olduðunu belirtir
+        Scheme = "Bearer" // Bearer þemasýný kullanýr
+    });
+
+    // Endpoint'lerde güvenlik gereksinimi ekleme
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header
+            },
+            Array.Empty<string>() // Tüm scopelar için boþ array döndürür
+        }
+    });
+
+});
+
+// Cors ayarlarý (api'ye nereden eriþilebileceðini ayarladýðýmýz bölüm)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
@@ -96,6 +186,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
 
 
 app.UseAuthentication();
