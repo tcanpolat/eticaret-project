@@ -38,5 +38,24 @@ namespace ETICARET.API.Controllers
                 return StatusCode(500,ApiResponse<object>.ErrorResponse($"Bir Hata oluştu: {ex.Message} "));
             }
         }
+
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id) 
+        {
+            try
+            {
+                var product = _productService.GetById(id);
+                if(product == null)
+                {
+                    return NotFound(ApiResponse<object>.ErrorResponse("Ürün bulunamadı"));
+                }
+                return Ok(ApiResponse<Product>.SuccessResponse(product,"Ürün başarıyla getirildi."));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,ApiResponse<object>.ErrorResponse($"Bir Hata oluştu: Hata Mesajı: {ex.Message}"));
+            }
+        
+        }
     }
 }
